@@ -1,0 +1,22 @@
+
+# Query A — Check data sources
+index=main
+| stats count by host, sourcetype
+| sort - count
+
+# Query B — Failed logons (4625)
+index=main EventCode=4625
+| table _time ComputerName EventCode Message
+| sort -_time
+
+# Query C — Successful logons (4624)
+index=main EventCode=4624
+| table _time ComputerName EventCode Message
+| sort -_time
+
+# Query D — Repeated failed logons
+index=main EventCode=4625
+| bin _time span=5m
+| stats count as failed_attempts by _time ComputerName Account_Name Logon_Type
+| where failed_attempts >= 3
+| sort - failed_attempts

@@ -1,0 +1,54 @@
+# Windows Authentication Monitoring and Investigation Using Splunk
+
+## 1. Objective
+
+The objective of this project was to collect Windows Security logs in Splunk, investigate successful and failed logon events, and develop a basic detection for repeated failed logons.
+
+## 2. Lab Environment
+
+- Windows 11 virtual machine
+- Ubuntu virtual machine running Splunk Enterprise
+- Splunk Universal Forwarder on Windows
+- Splunk receiving port: TCP 9997
+- Splunk index: main
+
+## 3. Implementation
+
+1. Installed Splunk Enterprise on Ubuntu.
+2. Configured Splunk to receive forwarded data on port 9997.
+3. Installed and started Splunk Universal Forwarder on Windows.
+4. Verified network connectivity to the Splunk receiver.
+5. Confirmed Windows event data appeared in Splunk.
+6. Generated three controlled failed sign-in attempts using an incorrect password.
+7. Investigated Windows Security Event IDs 4625 and 4624.
+
+## 4. Failed Logon Investigation — Event ID 4625
+
+The investigated event contained these details:
+
+- Account: justin
+- Logon Type: 2 (interactive logon)
+- Status: 0xC000006D
+- Substatus: 0xC000006A
+- Source address reported by Windows: 127.0.0.1
+- Failure reason: unknown username or bad password
+
+The substatus 0xC000006A indicates an incorrect password. The events were intentionally generated in my lab, so they represent controlled test activity rather than a confirmed attack.
+
+## 5. Successful Logon Investigation — Event ID 4624
+
+I searched for Event ID 4624 to examine successful logons. A successful logon must be interpreted using its account, logon type, source information, and surrounding activity. It does not automatically indicate a human sign-in or suspicious activity.
+
+## 6. Detection Logic
+
+I prepared a Splunk SPL query to count failed logons by computer, account, and logon type in five-minute buckets, with a threshold of three or more failures.
+
+This is a basic detection for further investigation. It does not independently confirm brute-force activity.
+
+## 7. Conclusion
+
+This project provided practical experience with Windows Security log collection, forwarding logs to Splunk, searching authentication events, interpreting failure codes, and developing a basic repeated-failure detection.
+
+## 8. Evidence
+
+Screenshots are stored in the evidence directory. They document the receiver configuration, forwarder service, incoming Windows events, failed logon investigation, successful logon investigation, and detection results where captured.
